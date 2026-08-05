@@ -1,0 +1,199 @@
+.soleman-animate-hue {
+	position: relative;
+	isolation: isolate;
+}
+
+.soleman-animate-hue__layer {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 0;
+	overflow: hidden;
+	pointer-events: none;
+	border-radius: inherit;
+	opacity: var(--sm-ah-opacity, 0.55);
+	mix-blend-mode: var(--sm-ah-blend, soft-light);
+	contain: layout paint;
+	transform: translateZ(0);
+}
+
+.soleman-animate-hue__layer.is-paused .soleman-animate-hue__blob {
+	animation-play-state: paused;
+}
+
+.soleman-animate-hue__blob {
+	position: absolute;
+	border-radius: 50%;
+	width: var(--sm-ah-blob-w, 80%);
+	height: var(--sm-ah-blob-h, 80%);
+	margin: 0;
+	background: radial-gradient(
+		ellipse at 50% 50%,
+		var(--sm-ah-color, #6ec3f4) 0%,
+		var(--sm-ah-color, #6ec3f4) var(--sm-ah-inner-stop, 18%),
+		transparent var(--sm-ah-outer-stop, 70%)
+	);
+	opacity: 0.9;
+	transform: translate3d(-50%, -50%, 0) scale(1);
+	will-change: transform;
+	animation-name: soleman-animate-hue-drift;
+	animation-timing-function: ease-in-out;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+	backface-visibility: hidden;
+}
+
+/* Keep Elementor content above the overlay layer. */
+.soleman-animate-hue > .e-con-inner,
+.soleman-animate-hue > .elementor-widget,
+.soleman-animate-hue > .e-con,
+.soleman-animate-hue > .elementor-element:not(.soleman-animate-hue__layer) {
+	position: relative;
+	z-index: 1;
+}
+
+/* Transform-only animation keeps work on the compositor (no per-frame filter). */
+@keyframes soleman-animate-hue-drift {
+	0% {
+		transform: translate3d(
+				calc(-50% + var(--sm-ah-x1, 0%)),
+				calc(-50% + var(--sm-ah-y1, 0%)),
+				0
+			)
+			scale(var(--sm-ah-s1, 1));
+	}
+	50% {
+		transform: translate3d(
+				calc(-50% + var(--sm-ah-x2, 20%)),
+				calc(-50% + var(--sm-ah-y2, -15%)),
+				0
+			)
+			scale(var(--sm-ah-s2, 1.15));
+	}
+	100% {
+		transform: translate3d(
+				calc(-50% + var(--sm-ah-x3, -10%)),
+				calc(-50% + var(--sm-ah-y3, 25%)),
+				0
+			)
+			scale(var(--sm-ah-s3, 0.95));
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.soleman-animate-hue__blob {
+		animation: none;
+	}
+}
+
+/* ---- Debug panel ---- */
+.soleman-ah-debug {
+	position: fixed;
+	right: 16px;
+	bottom: 16px;
+	z-index: 999999;
+	width: min(440px, calc(100vw - 24px));
+	max-height: min(52vh, 520px);
+	display: flex;
+	flex-direction: column;
+	background: #111827;
+	color: #e5e7eb;
+	border: 1px solid #374151;
+	border-radius: 10px;
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+	font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	overflow: hidden;
+}
+
+.soleman-ah-debug__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 10px 12px;
+	background: #0b1220;
+	border-bottom: 1px solid #374151;
+	cursor: move;
+	user-select: none;
+}
+
+.soleman-ah-debug__title {
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	color: #93c5fd;
+}
+
+.soleman-ah-debug__meta {
+	color: #9ca3af;
+	font-size: 11px;
+}
+
+.soleman-ah-debug__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	padding: 8px 10px;
+	border-bottom: 1px solid #1f2937;
+	background: #0f172a;
+}
+
+.soleman-ah-debug__actions button {
+	appearance: none;
+	border: 1px solid #4b5563;
+	background: #1f2937;
+	color: #e5e7eb;
+	border-radius: 6px;
+	padding: 4px 8px;
+	font: inherit;
+	cursor: pointer;
+}
+
+.soleman-ah-debug__actions button:hover {
+	background: #374151;
+}
+
+.soleman-ah-debug__log {
+	flex: 1;
+	overflow: auto;
+	padding: 8px 10px 12px;
+	margin: 0;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.soleman-ah-debug__line {
+	margin: 0 0 6px;
+	padding-bottom: 6px;
+	border-bottom: 1px dashed #1f2937;
+}
+
+.soleman-ah-debug__line--warn {
+	color: #fbbf24;
+}
+
+.soleman-ah-debug__line--error {
+	color: #f87171;
+}
+
+.soleman-ah-debug__line--perf {
+	color: #34d399;
+}
+
+.soleman-ah-debug__time {
+	color: #60a5fa;
+	margin-right: 6px;
+}
+
+.soleman-ah-debug.is-collapsed .soleman-ah-debug__actions,
+.soleman-ah-debug.is-collapsed .soleman-ah-debug__log {
+	display: none;
+}
+
+.soleman-ah-debug.is-collapsed {
+	max-height: none;
+	width: auto;
+}
